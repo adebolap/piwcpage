@@ -1,5 +1,7 @@
+import { site } from "@/lib/site";
+
 export function getContactEmail(): string {
-  return process.env.CONTACT_EMAIL?.trim() ?? "";
+  return process.env.CONTACT_EMAIL?.trim() || site.email;
 }
 
 export function getCalendarEmbedUrl(): string | null {

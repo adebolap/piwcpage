@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getContactEmail } from "@/lib/integrations";
 import { parsePrayerRequest } from "@/lib/prayer";
 
 export const runtime = "nodejs";
@@ -61,8 +62,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         ok: false,
-        error:
-          "The prayer inbox is not connected yet. Please message @piwc_antwerp on Instagram.",
+        error: `The prayer inbox is not connected yet. Please email ${getContactEmail()} or message @piwc_antwerp on Instagram.`,
       },
       { status: 503 },
     );
@@ -94,8 +94,7 @@ export async function POST(request: Request) {
       return NextResponse.json(
         {
           ok: false,
-          error:
-            "We could not deliver this request. Please try again, or message @piwc_antwerp on Instagram.",
+          error: `We could not deliver this request. Please try again, or email ${getContactEmail()}.`,
         },
         { status: 502 },
       );
@@ -106,7 +105,7 @@ export async function POST(request: Request) {
       {
         ok: false,
         error:
-          "We could not deliver this request. Please try again, or message @piwc_antwerp on Instagram.",
+          `We could not deliver this request. Please try again, or email ${getContactEmail()}.`,
       },
       { status: 502 },
     );

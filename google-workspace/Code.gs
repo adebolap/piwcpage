@@ -13,7 +13,7 @@
  *    the timezone is Europe/Brussels.
  * 4. Project Settings → Script properties. Add:
  *      PRAYER_SECRET   a long random string (same value as PRAYER_SHARED_SECRET on Vercel)
- *      PRAYER_EMAIL    the Workspace address that should receive each request
+ *      PRAYER_EMAIL    antwerpvlamms@gmail.com for now, or a Workspace address later
  *      SHEET_ID        filled in automatically by setup
  * 5. Deploy → New deployment → Web app.
  *      Execute as: Me

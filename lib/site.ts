@@ -27,22 +27,17 @@ export const site = {
   spotifyEmbed:
     "https://open.spotify.com/embed/playlist/3ZRRgKRSswTr3pqQR0sHfN",
   playlistTitle: "PIWC Antwerp",
+  email: "antwerpvlamms@gmail.com",
 } as const;
 
-/**
- * Clock times are not published on the church bio page.
- * Put a confirmed Sunday time in `sundayTime` when the church confirms it,
- * for example "10:00".
- */
 export const gatherings = [
   {
     id: "sunday",
     name: "Sunday worship",
-    when: "Every Sunday",
-    time: "Time posted each week",
+    when: "Sundays, 9:30am–12:00 noon",
+    time: "9:30–12:00",
     place: "Merksemsesteenweg 32/34, Deurne",
-    detail:
-      "Worship with the church in Antwerp. The gathering time for this Sunday is posted on Instagram.",
+    detail: "Worship with the church in Antwerp, from 9:30 in the morning until 12:00.",
     href: site.mapsUrl,
     cta: "Get directions",
     external: true,

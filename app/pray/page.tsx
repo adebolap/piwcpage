@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PrayerForm } from "@/components/prayer-form";
 import { QrCode } from "@/components/qr-code";
+import { getContactEmail } from "@/lib/integrations";
 import { getPrayerUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
@@ -24,7 +25,7 @@ export default async function PrayPage() {
       </header>
       <section className="split">
         <div className="panel">
-          <PrayerForm />
+          <PrayerForm email={getContactEmail()} />
         </div>
         <aside className="panel">
           <h2>In the church</h2>
