@@ -13,7 +13,7 @@ Details on the page come from the church’s public links:
 
 Sunday worship is 9:30am to 12:00 noon. Friday Impact Service is every Friday at 19:30. Both are at Merksemsesteenweg 32/34. Wednesday Bible study is usually on Zoom and can occasionally meet at the church. Those changes are announced on Instagram and TikTok.
 
-Edit the gatherings list and the “word for the week” in `lib/site.ts`.
+Edit the gatherings list, mission copy, and the “word for the week” in `lib/site.ts`.
 
 ## Pages
 
