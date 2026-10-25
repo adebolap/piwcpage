@@ -3,7 +3,7 @@ import Link from "next/link";
 import { QrCode } from "@/components/qr-code";
 import { Reveal } from "@/components/reveal";
 import { getCalendarEmbedUrl, getContactEmail } from "@/lib/integrations";
-import { addressLines, gatherings, site } from "@/lib/site";
+import { addressLines, gatherings, site, word } from "@/lib/site";
 import { getPrayerUrl, getSiteUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
@@ -33,12 +33,19 @@ export default async function HomePage() {
     },
     sameAs: [site.instagram, site.tiktok, site.spotify],
     ...(email ? { email } : {}),
-    openingHoursSpecification: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: "Sunday",
-      opens: "09:30",
-      closes: "12:00",
-    },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Sunday",
+        opens: "09:30",
+        closes: "12:00",
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: "Friday",
+        opens: "19:30",
+      },
+    ],
   };
 
   return (
@@ -77,14 +84,17 @@ export default async function HomePage() {
             <div className="section-head">
               <p className="eyebrow">Gather with us</p>
               <h2 id="gather-title">This week</h2>
-              <p>Sunday worship in Deurne. Morning devotion and midweek Bible study on Zoom.</p>
+              <p>
+                Sunday worship and Friday Impact Service at the church. Morning devotion and
+                Wednesday Bible study usually meet on Zoom.
+              </p>
             </div>
           </Reveal>
           <div className="week-list">
             {gatherings.map((item, index) => (
-              <Reveal key={item.id} delay={index * 70}>
+              <Reveal key={item.id} delay={index * 60}>
                 <a
-                  className="gather"
+                  className={`gather${item.note ? " gather-has-note" : ""}`}
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -93,6 +103,7 @@ export default async function HomePage() {
                   <span>
                     {item.when} · {item.place}
                   </span>
+                  {item.note ? <small className="gather-note">{item.note}</small> : null}
                   <em>{item.cta}</em>
                 </a>
               </Reveal>
@@ -106,8 +117,9 @@ export default async function HomePage() {
               <p className="eyebrow">Find us</p>
               <h2 id="visit-title">Visit</h2>
               <p>
-                Sunday worship is in person from 9:30am until 12 noon. Morning devotion and
-                Wednesday Bible study are on Zoom.
+                Sundays 9:30am–12 noon and Fridays at 7:30pm are in person. Morning devotion is on
+                Zoom. Wednesday Bible study is usually online, and sometimes at the church — watch
+                Instagram and TikTok for those updates.
               </p>
             </div>
           </Reveal>
@@ -127,7 +139,7 @@ export default async function HomePage() {
                 </p>
                 <ul className="facts">
                   <li>An international congregation. Worship is in English.</li>
-                  <li>Bethel Grounds morning devotion and Wednesday Bible study meet on Zoom.</li>
+                  <li>Friday Impact Service every week at 19:30.</li>
                   <li>Prayer requests stay with the prayer team. They are never posted here.</li>
                 </ul>
                 <div className="actions">
@@ -165,6 +177,21 @@ export default async function HomePage() {
           </div>
         </section>
 
+        <section id="word" aria-labelledby="word-title">
+          <Reveal>
+            <figure className="word">
+              <p className="eyebrow">{word.eyebrow}</p>
+              <blockquote>
+                <p id="word-title">“{word.text}”</p>
+              </blockquote>
+              <figcaption>
+                <cite>{word.reference}</cite>
+                <span>{word.note}</span>
+              </figcaption>
+            </figure>
+          </Reveal>
+        </section>
+
         {calendar ? (
           <section aria-labelledby="calendar-title">
             <Reveal>
@@ -178,6 +205,34 @@ export default async function HomePage() {
             </Reveal>
           </section>
         ) : null}
+
+        <section id="welcome" aria-labelledby="welcome-title">
+          <Reveal>
+            <div className="welcome">
+              <div>
+                <p className="eyebrow">New here</p>
+                <h2 id="welcome-title">You belong in the room.</h2>
+                <p>
+                  Come a little early, take a seat, and let someone welcome you. No dress code —
+                  only a family ready to worship with you.
+                </p>
+              </div>
+              <div className="actions">
+                <a className="button" href="#visit">
+                  See how to find us
+                </a>
+                <a
+                  className="button button-ghost"
+                  href={site.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Say hello on Instagram
+                </a>
+              </div>
+            </div>
+          </Reveal>
+        </section>
 
         <section aria-labelledby="prayer-title">
           <Reveal>
@@ -229,6 +284,41 @@ export default async function HomePage() {
               loading="lazy"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             />
+          </Reveal>
+        </section>
+
+        <section id="follow" aria-labelledby="follow-title">
+          <Reveal>
+            <div className="follow">
+              <div className="section-head">
+                <p className="eyebrow">Stay close</p>
+                <h2 id="follow-title">Follow the life of the church</h2>
+                <p>
+                  Service updates, Wednesday venue changes, and midweek encouragement land first on
+                  our media platforms.
+                </p>
+              </div>
+              <div className="follow-links">
+                <a href={site.instagram} target="_blank" rel="noopener noreferrer">
+                  <strong>Instagram</strong>
+                  <span>{site.instagramHandle}</span>
+                </a>
+                <a href={site.tiktok} target="_blank" rel="noopener noreferrer">
+                  <strong>TikTok</strong>
+                  <span>{site.tiktokHandle}</span>
+                </a>
+                <a href={site.spotify} target="_blank" rel="noopener noreferrer">
+                  <strong>Spotify</strong>
+                  <span>{site.playlistTitle}</span>
+                </a>
+                {email ? (
+                  <a href={`mailto:${email}`}>
+                    <strong>Email</strong>
+                    <span>{email}</span>
+                  </a>
+                ) : null}
+              </div>
+            </div>
           </Reveal>
         </section>
       </div>

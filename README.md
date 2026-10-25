@@ -11,7 +11,9 @@ Details on the page come from the church’s public links:
 - Bethel Grounds morning devotion and Wednesday Bible study on the church Zoom
 - Spotify playlist “PIWC Antwerp”
 
-Sunday worship is 9:30am–12:00 noon at Merksemsesteenweg 32/34.
+Sunday worship is 9:30am–12:00 noon. Friday Impact Service is every Friday at 19:30. Both are at Merksemsesteenweg 32/34. Wednesday Bible study is usually on Zoom and can occasionally meet at the church — those changes are announced on Instagram and TikTok.
+
+Edit the gatherings list and the “word for the week” in `lib/site.ts`.
 
 ## Pages
 

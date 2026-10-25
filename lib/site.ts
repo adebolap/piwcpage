@@ -30,6 +30,14 @@ export const site = {
   email: "antwerpvlamms@gmail.com",
 } as const;
 
+/** Scripture shown for inspiration. Swap the text when the church shares a new word. */
+export const word = {
+  eyebrow: "A word for the week",
+  text: "My house shall be called a house of prayer.",
+  reference: "Matthew 21:13",
+  note: "Come expecting God to meet you in worship, in the Word, and in prayer.",
+} as const;
+
 export const gatherings = [
   {
     id: "sunday",
@@ -38,6 +46,19 @@ export const gatherings = [
     time: "9:30–12:00",
     place: "Merksemsesteenweg 32/34, Deurne",
     detail: "Worship with the church in Antwerp, from 9:30 in the morning until 12:00.",
+    note: "",
+    href: site.mapsUrl,
+    cta: "Get directions",
+    external: true,
+  },
+  {
+    id: "friday",
+    name: "Friday Impact Service",
+    when: "Fridays, 7:30pm",
+    time: "19:30",
+    place: "Merksemsesteenweg 32/34, Deurne",
+    detail: "An evening Impact Service at the church, every Friday at 19:30.",
+    note: "",
     href: site.mapsUrl,
     cta: "Get directions",
     external: true,
@@ -49,6 +70,7 @@ export const gatherings = [
     time: "Online",
     place: "Zoom",
     detail: "A morning devotion to pray and listen to the Word before the day begins.",
+    note: "",
     href: site.zoomUrl,
     cta: "Join on Zoom",
     external: true,
@@ -56,10 +78,11 @@ export const gatherings = [
   {
     id: "bible",
     name: "Wednesday Bible study",
-    when: "Wednesday",
+    when: "Wednesdays",
     time: "Online",
-    place: "Zoom",
-    detail: "Midweek Bible study with the church, on Zoom.",
+    place: "Usually on Zoom",
+    detail: "Midweek Bible study with the church.",
+    note: "Bible study can occasionally take place at the church. When it does, we share the update on Instagram and TikTok.",
     href: site.zoomUrl,
     cta: "Join on Zoom",
     external: true,
