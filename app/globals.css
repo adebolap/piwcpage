@@ -152,16 +152,30 @@ a { color: inherit; }
   background: var(--wine-soft);
 }
 
+/* Prayer is a quiet CTA. The solid fill only appears on /pray. */
 .nav .nav-pray {
-  background: var(--wine);
-  color: var(--white);
   margin-left: 0.25rem;
+  background: transparent;
+  color: var(--wine);
+  border: 1px solid rgba(122, 36, 51, 0.32);
 }
 
 .nav .nav-pray:hover {
+  background: var(--wine-soft);
+  color: var(--wine-deep);
+  border-color: rgba(122, 36, 51, 0.5);
+  transform: translateY(-1px);
+}
+
+.nav .nav-pray[aria-current="page"] {
+  background: var(--wine);
+  color: var(--white);
+  border-color: var(--wine);
+}
+
+.nav .nav-pray[aria-current="page"]:hover {
   background: var(--wine-deep);
   color: var(--white);
-  transform: translateY(-1px);
 }
 
 /* Full-bleed hero */
