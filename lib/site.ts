@@ -27,6 +27,7 @@ export const site = {
   spotifyEmbed:
     "https://open.spotify.com/embed/playlist/3ZRRgKRSswTr3pqQR0sHfN",
   playlistTitle: "PIWC Antwerp",
+  email: "antwerpvlamms@gmail.com",
 } as const;
 
 /**

@@ -28,9 +28,10 @@ export default function PrivacyPage() {
         <li>whether the prayer team may share it when the church prays together</li>
       </ul>
       <p>
-        The church uses this only to pray and, when you leave contact details, to follow up. Requests
-        are stored in the church Google Workspace (a private spreadsheet and an email to the prayer
-        team). They are not published on this website and they are not sold.
+        The church uses this only to pray and, when you leave contact details, to follow up. When the
+        form is connected, requests are stored in the church Google Workspace and emailed to{" "}
+        <a href={`mailto:${email}`}>{email}</a>. They are not published on this website and they are
+        not sold.
       </p>
       <p>
         The prayer team keeps a request only as long as they need it for prayer and follow-up. You

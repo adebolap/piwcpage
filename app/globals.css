@@ -181,6 +181,8 @@ h1 {
   font: inherit;
   font-size: 1rem;
   cursor: pointer;
+  overflow-wrap: anywhere;
+  text-align: center;
 }
 
 .button:hover { background: var(--wine-deep); }

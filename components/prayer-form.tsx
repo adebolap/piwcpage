@@ -4,7 +4,7 @@ import { useState, type FormEvent } from "react";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-export function PrayerForm() {
+export function PrayerForm({ email }: { email: string }) {
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const [testMode, setTestMode] = useState(false);
@@ -124,8 +124,8 @@ export function PrayerForm() {
         {status === "sending" ? "Sending…" : "Send prayer request"}
       </button>
       <p className="form-note">
-        You can also message <a href="https://www.instagram.com/piwc_antwerp/">@piwc_antwerp</a> on
-        Instagram.
+        You can also write to <a href={`mailto:${email}`}>{email}</a> or message{" "}
+        <a href="https://www.instagram.com/piwc_antwerp/">@piwc_antwerp</a> on Instagram.
       </p>
     </form>
   );

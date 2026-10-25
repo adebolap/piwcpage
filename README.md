@@ -43,7 +43,7 @@ Sunday worship is listed without a clock time, because the public bio page does 
 
 Optional Workspace extras, set as environment variables:
 
-- `CONTACT_EMAIL` — shown on the site. Use a Workspace address.
+- `CONTACT_EMAIL` — shown on the site. Until you set this, the site uses antwerpvlamms@gmail.com.
 - `GOOGLE_CALENDAR_ID` — a calendar shared as public, so the agenda can be embedded. Times display in Europe/Brussels.
 
 ## Deploy on Vercel
@@ -55,7 +55,7 @@ Optional Workspace extras, set as environment variables:
    | --- | --- |
    | `GOOGLE_APPS_SCRIPT_URL` | the web app URL from the deploy step |
    | `PRAYER_SHARED_SECRET` | the same string as `PRAYER_SECRET` |
-   | `CONTACT_EMAIL` | optional |
+   | `CONTACT_EMAIL` | optional. Defaults to antwerpvlamms@gmail.com |
    | `GOOGLE_CALENDAR_ID` | optional |
    | `NEXT_PUBLIC_SITE_URL` | optional. Leave empty and the QR code uses the domain of the visit, including `*.vercel.app` and a custom domain. |
 
