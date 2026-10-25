@@ -11,14 +11,16 @@ Details on the page come from the church’s public links:
 - Bethel Grounds morning devotion and Wednesday Bible study on the church Zoom
 - Spotify playlist “PIWC Antwerp”
 
-Sunday worship is 9:30am–12:00 noon at Merksemsesteenweg 32/34.
+Sunday worship is 9:30am to 12:00 noon. Friday Impact Service is every Friday at 19:30. Both are at Merksemsesteenweg 32/34. Wednesday Bible study is usually on Zoom and can occasionally meet at the church. Those changes are announced on Instagram and TikTok.
+
+Edit the gatherings list and the “word for the week” in `lib/site.ts`.
 
 ## Pages
 
-- `/` — welcome, gatherings, map, prayer QR, Spotify
-- `/pray` — prayer request form (this is what the QR code opens)
-- `/qr` — foyer poster, print, and PNG download
-- `/privacy` — what happens to a prayer request
+- `/` : welcome, gatherings, map, prayer QR, Spotify
+- `/pray` : prayer request form (this is what the QR code opens)
+- `/qr` : foyer poster, print, and PNG download
+- `/privacy` : what happens to a prayer request
 
 ## Connect Google Workspace
 
@@ -43,8 +45,8 @@ Sunday worship is 9:30am–12:00 noon at Merksemsesteenweg 32/34.
 
 Optional Workspace extras, set as environment variables:
 
-- `CONTACT_EMAIL` — shown on the site. Until you set this, the site uses antwerpvlamms@gmail.com.
-- `GOOGLE_CALENDAR_ID` — a calendar shared as public, so the agenda can be embedded. Times display in Europe/Brussels.
+- `CONTACT_EMAIL` : shown on the site. Until you set this, the site uses antwerpvlamms@gmail.com.
+- `GOOGLE_CALENDAR_ID` : a calendar shared as public, so the agenda can be embedded. Times display in Europe/Brussels.
 
 ## Deploy on Vercel
 

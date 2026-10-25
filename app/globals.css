@@ -66,7 +66,7 @@ a { color: inherit; }
   margin-inline: auto;
 }
 
-/* —— Header: frosted glass —— */
+/* Header: frosted glass */
 .site-header {
   position: sticky;
   top: 0.75rem;
@@ -164,7 +164,7 @@ a { color: inherit; }
   transform: translateY(-1px);
 }
 
-/* —— Full-bleed hero —— */
+/* Full-bleed hero */
 .hero {
   position: relative;
   isolation: isolate;
@@ -327,7 +327,7 @@ a { color: inherit; }
   box-shadow: none;
 }
 
-/* —— Sections —— */
+/* Sections */
 section { padding: 4.5rem 0; }
 
 .section-head {
@@ -394,6 +394,14 @@ section { padding: 4.5rem 0; }
   font-size: 0.98rem;
 }
 
+.gather-note {
+  grid-column: 1;
+  max-width: 42rem;
+  color: var(--mute);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
 .gather em {
   grid-column: 2;
   grid-row: 1 / span 2;
@@ -402,6 +410,12 @@ section { padding: 4.5rem 0; }
   font-size: 0.92rem;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.gather-has-note em {
+  grid-row: 1 / span 3;
+  align-self: start;
+  margin-top: 0.15rem;
 }
 
 .split {
@@ -689,7 +703,7 @@ section { padding: 4.5rem 0; }
   box-shadow: var(--shadow-sm);
 }
 
-/* —— Motion —— */
+/* Motion */
 .reveal {
   opacity: 0;
   transform: translateY(18px);
@@ -732,16 +746,129 @@ section { padding: 4.5rem 0; }
   outline-offset: 3px;
 }
 
+.word {
+  margin: 0;
+  padding: 2.4rem 0 0.4rem;
+  max-width: 44rem;
+}
+
+.word blockquote {
+  margin: 0;
+}
+
+.word blockquote p {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: clamp(2rem, 4.8vw, 3.5rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  color: var(--ink);
+}
+
+.word figcaption {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1.2rem;
+}
+
+.word cite {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--wine);
+  letter-spacing: 0.04em;
+}
+
+.word figcaption span {
+  color: var(--ink-soft);
+  max-width: 34rem;
+}
+
+.welcome {
+  display: grid;
+  gap: 1.4rem;
+  padding: 2rem 0 0.2rem;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.welcome h2 {
+  margin: 0 0 0.7rem;
+  font-family: var(--serif);
+  font-size: clamp(2.1rem, 4.2vw, 3.2rem);
+  font-weight: 560;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.welcome p {
+  margin: 0;
+  max-width: 34rem;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+}
+
+.welcome .actions { margin-top: 0; }
+
+.follow {
+  padding-top: 0.4rem;
+}
+
+.follow .section-head { margin-bottom: 1.4rem; }
+
+.follow-links {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line-strong);
+}
+
+.follow-links a {
+  display: grid;
+  gap: 0.15rem;
+  padding: 1.15rem 0.1rem;
+  border-bottom: 1px solid var(--line-strong);
+  text-decoration: none;
+  transition: padding-left 0.35s var(--ease), background 0.3s var(--ease);
+}
+
+.follow-links a:hover {
+  background: rgba(255, 252, 248, 0.7);
+  padding-left: 0.4rem;
+}
+
+.follow-links strong {
+  font-size: 1.08rem;
+  letter-spacing: -0.02em;
+}
+
+.follow-links span {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
 @media (min-width: 860px) {
   .split { grid-template-columns: 0.92fr 1.08fr; align-items: stretch; }
   .prayer-band { grid-template-columns: 1.35fr 0.65fr; padding: 2.4rem; }
   .site-header { padding-inline: 1rem 0.5rem; }
   .gather {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.4fr) auto;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.45fr) auto;
     align-items: baseline;
   }
   .gather span { grid-column: 2; grid-row: 1; }
+  .gather-note { grid-column: 2; grid-row: 2; }
   .gather em { grid-column: 3; grid-row: 1; }
+  .gather-has-note em { grid-row: 1 / span 2; }
+  .welcome {
+    grid-template-columns: 1.4fr 0.8fr;
+    align-items: end;
+    gap: 2rem;
+    padding-block: 2.6rem;
+  }
+  .follow-links {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 2rem;
+  }
 }
 
 @media (max-width: 720px) {
@@ -757,7 +884,9 @@ section { padding: 4.5rem 0; }
     grid-template-columns: 1fr;
     gap: 0.25rem;
   }
-  .gather em { grid-column: 1; grid-row: auto; }
+  .gather em,
+  .gather-note { grid-column: 1; grid-row: auto; }
+  .gather-has-note em { grid-row: auto; margin-top: 0; }
   section { padding: 3.4rem 0; }
 }
 
