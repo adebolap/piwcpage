@@ -48,7 +48,7 @@ Optional Workspace extras, set as environment variables:
 
 ## Deploy on Vercel
 
-1. Import this repository in Vercel. Framework preset: Next.js.
+1. Import this repository in Vercel. `vercel.json` sets the framework to Next.js, so the deploy uses the Next.js build instead of a static `public` folder. If an older project still fails with “No Output Directory named public”, open Project Settings → Build and Deployment, set Framework Preset to Next.js, and turn off the Output Directory override. Leave that field empty.
 2. Environment variables:
 
    | Name | Value |
