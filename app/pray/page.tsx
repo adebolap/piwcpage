@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PrayerForm } from "@/components/prayer-form";
 import { QrCode } from "@/components/qr-code";
+import { Reveal } from "@/components/reveal";
 import { getContactEmail } from "@/lib/integrations";
 import { getPrayerUrl } from "@/lib/url";
 
@@ -24,17 +25,21 @@ export default async function PrayPage() {
         </p>
       </header>
       <section className="split">
-        <div className="panel">
-          <PrayerForm email={getContactEmail()} />
-        </div>
-        <aside className="panel">
-          <h2>In the church</h2>
-          <p>This is the same code printed for the foyer. A phone camera opens this page.</p>
-          <div className="qr-card">
-            <QrCode url={prayerUrl} />
-            <p>{prayerUrl.replace(/^https?:\/\//, "")}</p>
+        <Reveal>
+          <div className="panel">
+            <PrayerForm email={getContactEmail()} />
           </div>
-        </aside>
+        </Reveal>
+        <Reveal delay={90}>
+          <aside className="panel">
+            <h2>In the church</h2>
+            <p>This is the same code printed for the foyer. A phone camera opens this page.</p>
+            <div className="qr-card">
+              <QrCode url={prayerUrl} />
+              <p>{prayerUrl.replace(/^https?:\/\//, "")}</p>
+            </div>
+          </aside>
+        </Reveal>
       </section>
     </main>
   );
