@@ -66,7 +66,7 @@ a { color: inherit; }
   margin-inline: auto;
 }
 
-/* —— Header: frosted glass —— */
+/* Header: frosted glass */
 .site-header {
   position: sticky;
   top: 0.75rem;
@@ -164,7 +164,7 @@ a { color: inherit; }
   transform: translateY(-1px);
 }
 
-/* —— Full-bleed hero —— */
+/* Full-bleed hero */
 .hero {
   position: relative;
   isolation: isolate;
@@ -327,7 +327,7 @@ a { color: inherit; }
   box-shadow: none;
 }
 
-/* —— Sections —— */
+/* Sections */
 section { padding: 4.5rem 0; }
 
 .section-head {
@@ -703,7 +703,7 @@ section { padding: 4.5rem 0; }
   box-shadow: var(--shadow-sm);
 }
 
-/* —— Motion —— */
+/* Motion */
 .reveal {
   opacity: 0;
   transform: translateY(18px);

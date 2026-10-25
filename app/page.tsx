@@ -7,7 +7,7 @@ import { addressLines, gatherings, site, word } from "@/lib/site";
 import { getPrayerUrl, getSiteUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
-  title: "PIWC Antwerp — The Centre where God lives",
+  title: "PIWC Antwerp: The Centre where God lives",
   description: site.description,
 };
 
@@ -64,8 +64,8 @@ export default async function HomePage() {
           </h1>
           <p className="hero-title hero-in hero-in-3">{site.tagline}.</p>
           <p className="lede hero-in hero-in-4">
-            An international congregation of {site.denomination}. Come as you are — to sing, to
-            pray, and to hear the Bible taught.
+            An international congregation of {site.denomination}. Come as you are, to sing, to pray,
+            and to hear the Bible taught.
           </p>
           <div className="actions hero-in hero-in-4">
             <a className="button" href="#visit">
@@ -117,8 +117,8 @@ export default async function HomePage() {
               <p className="eyebrow">Find us</p>
               <h2 id="visit-title">Visit</h2>
               <p>
-                Sundays 9:30am–12 noon and Fridays at 7:30pm are in person. Morning devotion is on
-                Zoom. Wednesday Bible study is usually online, and sometimes at the church — watch
+                Sundays 9:30am to 12 noon and Fridays at 7:30pm are in person. Morning devotion is on
+                Zoom. Wednesday Bible study is usually online, and sometimes at the church. Watch
                 Instagram and TikTok for those updates.
               </p>
             </div>
@@ -213,8 +213,8 @@ export default async function HomePage() {
                 <p className="eyebrow">New here</p>
                 <h2 id="welcome-title">You belong in the room.</h2>
                 <p>
-                  Come a little early, take a seat, and let someone welcome you. No dress code —
-                  only a family ready to worship with you.
+                  Come a little early, take a seat, and let someone welcome you. No dress code, only a
+                  family ready to worship with you.
                 </p>
               </div>
               <div className="actions">
@@ -245,7 +245,7 @@ export default async function HomePage() {
                   PIWC Antwerp prayer team in the church Google Workspace.
                 </p>
                 <p className="verse">
-                  “My house shall be called a house of prayer.” — Matthew 21:13
+                  “My house shall be called a house of prayer.” Matthew 21:13
                 </p>
                 <div className="actions">
                   <Link className="button button-light" href="/pray">

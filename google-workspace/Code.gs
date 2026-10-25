@@ -1,5 +1,5 @@
 /**
- * PIWC Antwerp — prayer requests into Google Workspace.
+ * PIWC Antwerp: prayer requests into Google Workspace.
  *
  * This script saves each website prayer request in a private Google Sheet
  * and emails the prayer team from the Workspace account that owns the script.
@@ -31,7 +31,7 @@ function setup() {
   var existing = props.getProperty("SHEET_ID");
   var ss = existing
     ? SpreadsheetApp.openById(existing)
-    : SpreadsheetApp.create("PIWC Antwerp — Prayer requests");
+    : SpreadsheetApp.create("PIWC Antwerp: Prayer requests");
 
   ss.setSpreadsheetTimeZone("Europe/Brussels");
   var sheet = ss.getSheetByName("Prayer requests");
@@ -90,7 +90,7 @@ function doPost(e) {
   if (email) {
     MailApp.sendEmail({
       to: email,
-      subject: "New prayer request — PIWC Antwerp",
+      subject: "New prayer request: PIWC Antwerp",
       body: [
         "A prayer request arrived from the website.",
         "",

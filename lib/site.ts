@@ -42,8 +42,8 @@ export const gatherings = [
   {
     id: "sunday",
     name: "Sunday worship",
-    when: "Sundays, 9:30am–12:00 noon",
-    time: "9:30–12:00",
+    when: "Sundays, 9:30am to 12:00 noon",
+    time: "9:30 to 12:00",
     place: "Merksemsesteenweg 32/34, Deurne",
     detail: "Worship with the church in Antwerp, from 9:30 in the morning until 12:00.",
     note: "",

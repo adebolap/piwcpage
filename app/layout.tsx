@@ -24,8 +24,8 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "PIWC Antwerp — The Centre where God lives",
-    template: "%s — PIWC Antwerp",
+    default: "PIWC Antwerp: The Centre where God lives",
+    template: "%s · PIWC Antwerp",
   },
   description: site.description,
   metadataBase: new URL(configuredSiteUrl()),
