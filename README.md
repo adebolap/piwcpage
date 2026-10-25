@@ -11,7 +11,7 @@ Details on the page come from the church’s public links:
 - Bethel Grounds morning devotion and Wednesday Bible study on the church Zoom
 - Spotify playlist “PIWC Antwerp”
 
-Sunday worship is listed without a clock time, because the public bio page does not publish one. When the church confirms a standing time, set it in `lib/site.ts` (`gatherings`, the Sunday item).
+Sunday worship is 9:30am–12:00 noon at Merksemsesteenweg 32/34.
 
 ## Pages
 

@@ -32,6 +32,12 @@ export default async function HomePage() {
     },
     sameAs: [site.instagram, site.tiktok, site.spotify],
     ...(email ? { email } : {}),
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: "Sunday",
+      opens: "09:30",
+      closes: "12:00",
+    },
   };
 
   return (
@@ -74,8 +80,8 @@ export default async function HomePage() {
           <div className="section-head">
             <h2 id="visit-title">Visit</h2>
             <p>
-              Sunday worship is in person. Morning devotion and Wednesday Bible study are on Zoom.
-              The Sunday time is posted each week on {site.instagramHandle}.
+              Sunday worship is in person from 9:30am until 12 noon. Morning devotion and
+              Wednesday Bible study are on Zoom.
             </p>
           </div>
           <div className="split">
