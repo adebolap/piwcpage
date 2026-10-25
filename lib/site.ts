@@ -4,7 +4,8 @@ export const site = {
   denomination: "The Church of Pentecost",
   tagline: "The Centre where God lives",
   description:
-    "PIWC Antwerp is an international congregation of The Church of Pentecost in Antwerp. Come and worship, pray, and open the Bible with us.",
+    "Pentecost International Worship Centre (PIWC) Antwerp is a Christian faith-based, nonprofit organization dedicated to spreading the Gospel of Jesus Christ, fostering spiritual growth, and building a welcoming, multicultural community.",
+  lede: "A welcoming, multicultural church in Antwerp. We spread the Gospel of Jesus Christ, grow in the Word, and serve our city with Christian love.",
   address: {
     line: "Merksemsesteenweg 32/34",
     postalCode: "2100",
@@ -28,6 +29,37 @@ export const site = {
     "https://open.spotify.com/embed/playlist/3ZRRgKRSswTr3pqQR0sHfN",
   playlistTitle: "PIWC Antwerp",
   email: "antwerpvlamms@gmail.com",
+} as const;
+
+/**
+ * Mission shown in the About section.
+ * Keep the hero short; put the fuller statement here.
+ */
+export const mission = {
+  eyebrow: "Who we are",
+  title: "Gospel, growth, and community.",
+  paragraphs: [
+    "Pentecost International Worship Centre (PIWC) Antwerp is a Christian faith-based, nonprofit organization dedicated to spreading the Gospel of Jesus Christ, fostering spiritual growth, and building a welcoming, multicultural community.",
+    "Through worship, biblical teaching, discipleship, community outreach, and charitable initiatives, we seek to empower individuals, strengthen families, support those in need, and positively impact society through Christian love and service.",
+  ],
+  pillars: [
+    {
+      name: "Worship",
+      detail: "Gathering to exalt Jesus Christ together.",
+    },
+    {
+      name: "Biblical teaching",
+      detail: "Opening Scripture for spiritual growth and discipleship.",
+    },
+    {
+      name: "Community",
+      detail: "A multicultural family that welcomes every nation in the city.",
+    },
+    {
+      name: "Outreach and charity",
+      detail: "Serving those in need with Christian love.",
+    },
+  ],
 } as const;
 
 /** Scripture shown for inspiration. Swap the text when the church shares a new word. */

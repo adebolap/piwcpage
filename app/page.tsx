@@ -3,7 +3,7 @@ import Link from "next/link";
 import { QrCode } from "@/components/qr-code";
 import { Reveal } from "@/components/reveal";
 import { getCalendarEmbedUrl, getContactEmail } from "@/lib/integrations";
-import { addressLines, gatherings, site, word } from "@/lib/site";
+import { addressLines, gatherings, mission, site, word } from "@/lib/site";
 import { getPrayerUrl, getSiteUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
@@ -63,10 +63,7 @@ export default async function HomePage() {
             {site.name}
           </h1>
           <p className="hero-title hero-in hero-in-3">{site.tagline}.</p>
-          <p className="lede hero-in hero-in-4">
-            An international congregation of {site.denomination}. Come as you are, to sing, to pray,
-            and to hear the Bible taught.
-          </p>
+          <p className="lede hero-in hero-in-4">{site.lede}</p>
           <div className="actions hero-in hero-in-4">
             <a className="button" href="#visit">
               Plan your visit
@@ -138,9 +135,9 @@ export default async function HomePage() {
                   {site.address.district}, in the city of Antwerp. Part of {site.denomination}.
                 </p>
                 <ul className="facts">
-                  <li>An international congregation. Worship is in English.</li>
+                  <li>A multicultural congregation of {site.denomination}. Worship is in English.</li>
                   <li>Friday Impact Service every week at 19:30.</li>
-                  <li>Prayer requests stay with the prayer team. They are never posted here.</li>
+                  <li>A faith-based nonprofit serving Antwerp through the Gospel and Christian love.</li>
                 </ul>
                 <div className="actions">
                   <a
@@ -173,6 +170,34 @@ export default async function HomePage() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
+            </Reveal>
+          </div>
+        </section>
+
+        <section id="about" aria-labelledby="about-title">
+          <Reveal>
+            <div className="section-head about-head">
+              <p className="eyebrow">{mission.eyebrow}</p>
+              <h2 id="about-title">{mission.title}</h2>
+            </div>
+          </Reveal>
+          <div className="about">
+            <Reveal>
+              <div className="about-copy">
+                {mission.paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </Reveal>
+            <Reveal delay={80}>
+              <ul className="pillars">
+                {mission.pillars.map((pillar) => (
+                  <li key={pillar.name}>
+                    <strong>{pillar.name}</strong>
+                    <span>{pillar.detail}</span>
+                  </li>
+                ))}
+              </ul>
             </Reveal>
           </div>
         </section>
@@ -213,8 +238,9 @@ export default async function HomePage() {
                 <p className="eyebrow">New here</p>
                 <h2 id="welcome-title">You belong in the room.</h2>
                 <p>
-                  Come a little early, take a seat, and let someone welcome you. No dress code, only a
-                  family ready to worship with you.
+                  Whether you are new to faith or looking for a church family in Antwerp, come a
+                  little early, take a seat, and let someone welcome you. No dress code, only a
+                  multicultural community ready to worship with you.
                 </p>
               </div>
               <div className="actions">
