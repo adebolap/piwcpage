@@ -11,7 +11,8 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-serif",
   display: "swap",
-  weight: ["500", "600"],
+  weight: "variable",
+  axes: ["SOFT", "WONK", "opsz"],
 });
 
 const outfit = Outfit({
