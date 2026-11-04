@@ -32,6 +32,22 @@ export const site = {
 } as const;
 
 /**
+ * Belgian EPC / SEPA payment QR for church giving.
+ * Banking apps in Belgium can scan this payload directly.
+ */
+export const giving = {
+  beneficiary: "CHURCH OF PENTECOST VZW ANTWERP P.I.W.C",
+  iban: "BE61734048103117",
+  ibanDisplay: "BE61 7340 4810 3117",
+  bic: "KREDBEBB",
+  bicFull: "KREDBEBBXXX",
+  currency: "EUR",
+  /** Exact EPC QR payload scanned from the church payment code. */
+  epcPayload:
+    "BCD\n002\n1\nSCT\nKREDBEBBXXX\nCHURCH OF PENTECOST VZW ANTWERP P.I.W.C\nBE61734048103117\nEUR0.00\n\n",
+} as const;
+
+/**
  * Mission shown in the About section.
  * Keep the hero short; put the fuller statement here.
  */

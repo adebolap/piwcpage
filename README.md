@@ -17,9 +17,10 @@ Edit the gatherings list, mission copy, and the “word for the week” in `lib/
 
 ## Pages
 
-- `/` : welcome, gatherings, map, prayer QR, Spotify
-- `/pray` : prayer request form (this is what the QR code opens)
-- `/qr` : foyer poster, print, and PNG download
+- `/` : welcome, gatherings, map, giving QR, prayer QR, Spotify
+- `/pray` : prayer request form (this is what the prayer QR code opens)
+- `/give` : bank details and printable giving QR (Belgian EPC / SEPA)
+- `/qr` : foyer poster for prayer requests
 - `/privacy` : what happens to a prayer request
 
 ## Connect Google Workspace

@@ -1,11 +1,19 @@
 import QRCode from "qrcode";
 
-export async function QrCode({ url, size = 280 }: { url: string; size?: number }) {
+export async function QrCode({
+  url,
+  size = 280,
+  label = "QR code",
+}: {
+  url: string;
+  size?: number;
+  label?: string;
+}) {
   const svg = await QRCode.toString(url, {
     type: "svg",
     margin: 1,
     width: size,
-    errorCorrectionLevel: "H",
+    errorCorrectionLevel: "M",
     color: { dark: "#1A1614", light: "#00000000" },
   });
 
@@ -13,7 +21,7 @@ export async function QrCode({ url, size = 280 }: { url: string; size?: number }
     <div
       className="qr"
       role="img"
-      aria-label="QR code for the prayer form"
+      aria-label={label}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   );
