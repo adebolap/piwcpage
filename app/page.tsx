@@ -3,7 +3,7 @@ import Link from "next/link";
 import { QrCode } from "@/components/qr-code";
 import { Reveal } from "@/components/reveal";
 import { getCalendarEmbedUrl, getContactEmail } from "@/lib/integrations";
-import { addressLines, gatherings, mission, site, word } from "@/lib/site";
+import { addressLines, gatherings, giving, mission, site, word } from "@/lib/site";
 import { getPrayerUrl, getSiteUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
@@ -260,6 +260,51 @@ export default async function HomePage() {
           </Reveal>
         </section>
 
+        <section id="give" aria-labelledby="give-title">
+          <Reveal>
+            <div className="give-band">
+              <div>
+                <p className="eyebrow">Partner with us</p>
+                <h2 id="give-title">Support the work in Antwerp.</h2>
+                <p>
+                  Scan the payment QR with your banking app, or transfer to the church account.
+                  Gifts help PIWC Antwerp worship, teach, and serve the city.
+                </p>
+                <ul className="facts give-facts">
+                  <li>
+                    <strong>IBAN</strong>
+                    <span>{giving.ibanDisplay}</span>
+                  </li>
+                  <li>
+                    <strong>BIC</strong>
+                    <span>{giving.bic}</span>
+                  </li>
+                  <li>
+                    <strong>Beneficiary</strong>
+                    <span>{giving.beneficiary}</span>
+                  </li>
+                </ul>
+                <div className="actions">
+                  <Link className="button" href="/give">
+                    Open giving page
+                  </Link>
+                  <a className="button button-ghost" href="/api/qr/give">
+                    Download QR
+                  </a>
+                </div>
+              </div>
+              <div className="qr-card">
+                <QrCode
+                  url={giving.epcPayload}
+                  label="Payment QR code for PIWC Antwerp bank transfer"
+                />
+                <p>Scan with your banking app</p>
+                <Link href="/give">Bank details</Link>
+              </div>
+            </div>
+          </Reveal>
+        </section>
+
         <section aria-labelledby="prayer-title">
           <Reveal>
             <div className="prayer-band">
@@ -283,7 +328,7 @@ export default async function HomePage() {
                 </div>
               </div>
               <div className="qr-card">
-                <QrCode url={prayerUrl} />
+                <QrCode url={prayerUrl} label="QR code for the prayer form" />
                 <p>Scan for prayer requests</p>
                 <Link href="/pray">Open the form</Link>
               </div>
@@ -337,6 +382,10 @@ export default async function HomePage() {
                   <strong>Spotify</strong>
                   <span>{site.playlistTitle}</span>
                 </a>
+                <Link href="/give">
+                  <strong>Give</strong>
+                  <span>{giving.ibanDisplay}</span>
+                </Link>
                 {email ? (
                   <a href={`mailto:${email}`}>
                     <strong>Email</strong>

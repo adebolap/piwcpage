@@ -27,6 +27,8 @@ export function SiteFooter() {
           <br />
           <Link href="/privacy">Privacy</Link>
           {" · "}
+          <Link href="/give">Give</Link>
+          {" · "}
           <Link href="/qr">Prayer QR code</Link>
         </p>
       </div>

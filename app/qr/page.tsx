@@ -37,7 +37,7 @@ export default async function QrPage() {
         <p className="eyebrow">{site.denomination}</p>
         <h1>Prayer requests</h1>
         <p>{site.name}</p>
-        <QrCode url={prayerUrl} size={640} />
+        <QrCode url={prayerUrl} size={640} label="QR code for the prayer form" />
         <p>Scan with your phone camera</p>
         <a className="url-chip" href={prayerUrl}>
           {prayerUrl.replace(/^https?:\/\//, "")}
