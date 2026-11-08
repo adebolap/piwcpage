@@ -6,7 +6,7 @@
  * Run once as the spreadsheet owner:
  * 1. Open the Google Sheet.
  * 2. Extensions → Apps Script.
- * 3. Paste this file (replace any blank Code.gs).
+ * 3. Paste this file (replace any blank Code.gs / Untitled.gs).
  * 4. Save. In the toolbar function list, choose `applyGovernance`
  *    (or `myFunction` — both work). Click Run.
  * 5. Approve the permission prompt.
@@ -97,25 +97,41 @@ function applyGovernance() {
   }
   ss.setSpreadsheetTimeZone("Europe/Brussels");
 
-  ensureTabs_(ss);
-  normalizeHeaders_(ss);
-  styleTabs_(ss);
-  applyValidations_(ss);
-  refreshStatusFormulas();
-  applyConditionalFormatting_(ss);
-  protectGovernance_(ss);
+  var steps = [
+    ["tabs", ensureTabs_],
+    ["headers", normalizeHeaders_],
+    ["layout", styleTabs_],
+    ["dropdowns", applyValidations_],
+    ["status", function () { refreshStatusFormulas(); }],
+    ["colours", applyConditionalFormatting_],
+    ["protection", protectGovernance_],
+  ];
+  var failed = [];
+  for (var i = 0; i < steps.length; i++) {
+    try {
+      steps[i][1](ss);
+    } catch (err) {
+      failed.push(steps[i][0] + ": " + (err && err.message ? err.message : err));
+      Logger.log(failed[failed.length - 1]);
+    }
+  }
+
+  var message =
+    "Governance applied.\n\n" +
+    "• Header rows are locked.\n" +
+    "• Read_me is locked for editors.\n" +
+    "• Published / Mode use dropdowns.\n" +
+    "• Status turns red when a published row is incomplete.\n\n" +
+    "Leaders should only edit data rows. Do not rename tabs or columns.";
+  if (failed.length) {
+    message +=
+      "\n\nSome steps need a second look:\n- " + failed.join("\n- ");
+  }
 
   try {
-    SpreadsheetApp.getUi().alert(
-      "Governance applied.\n\n" +
-        "• Header rows are locked.\n" +
-        "• Read_me is locked for editors.\n" +
-        "• Published / Mode use dropdowns.\n" +
-        "• Status turns red when a published row is incomplete.\n\n" +
-        "Leaders should only edit data rows. Do not rename tabs or columns."
-    );
+    SpreadsheetApp.getUi().alert(message);
   } catch (err) {
-    Logger.log("Governance applied. Reload the Google Sheet.");
+    Logger.log(message);
   }
 }
 
@@ -173,12 +189,17 @@ function normalizeHeaders_(ss) {
 function setHeaders_(sheet, headers) {
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.setFrozenRows(1);
-  sheet.getRange(1, 1, 1, headers.length)
+  sheet
+    .getRange(1, 1, 1, headers.length)
     .setFontWeight("bold")
     .setBackground("#1D1D1F")
     .setFontColor("#FFFFFF");
-  if (sheet.getFilter()) sheet.getFilter().remove();
-  sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 2), headers.length).createFilter();
+  try {
+    if (sheet.getFilter()) sheet.getFilter().remove();
+    sheet.getRange(1, 1, Math.max(sheet.getLastRow(), 2), headers.length).createFilter();
+  } catch (err) {
+    Logger.log("Filter skipped on " + sheet.getName() + ": " + err);
+  }
 }
 
 function ensureReadme_(sheet) {
@@ -199,43 +220,59 @@ function styleTabs_(ss) {
   var announcements = ss.getSheetByName(SHEET_NAMES.announcements);
   var wednesday = ss.getSheetByName(SHEET_NAMES.wednesday);
   var word = wordSheet_(ss);
-  announcements.setColumnWidths(1, 1, 140);
-  announcements.setColumnWidths(2, 1, 220);
-  announcements.setColumnWidths(3, 1, 420);
-  wednesday.setColumnWidths(5, 1, 360);
-  word.setColumnWidths(2, 1, 420);
+  announcements.setColumnWidth(1, 140);
+  announcements.setColumnWidth(2, 220);
+  announcements.setColumnWidth(3, 420);
+  wednesday.setColumnWidth(5, 360);
+  word.setColumnWidth(2, 420);
 }
 
-function applyValidations_(ss) {
-  var yesNo = SpreadsheetApp.newDataValidation()
+function yesNoValidation_() {
+  return SpreadsheetApp.newDataValidation()
     .requireValueInList(["YES", "NO"], true)
     .setAllowInvalid(false)
     .setHelpText("Use YES or NO only.")
     .build();
+}
 
-  var mode = SpreadsheetApp.newDataValidation()
+function modeValidation_() {
+  return SpreadsheetApp.newDataValidation()
     .requireValueInList(["Zoom", "At the church"], true)
     .setAllowInvalid(false)
     .setHelpText("Choose Zoom or At the church.")
     .build();
+}
 
-  var dateHelp = SpreadsheetApp.newDataValidation()
-    .requireTextMatchesPattern("^\\d{4}-\\d{2}-\\d{2}$")
+/**
+ * YYYY-MM-DD check without requireTextMatchesPattern (not available in all runtimes).
+ * Formula is written for the top-left cell of the target range; Sheets adjusts it.
+ */
+function dateValidationFor_(a1TopLeft) {
+  var formula =
+    "=REGEXMATCH(TO_TEXT(" + a1TopLeft + '),"^[0-9]{4}-[0-9]{2}-[0-9]{2}$")';
+  return SpreadsheetApp.newDataValidation()
+    .requireFormulaSatisfied(formula)
     .setAllowInvalid(false)
     .setHelpText("Use YYYY-MM-DD, for example 2026-11-12.")
     .build();
+}
+
+function applyValidations_(ss) {
+  var yesNo = yesNoValidation_();
+  var mode = modeValidation_();
 
   var announcements = ss.getSheetByName(SHEET_NAMES.announcements);
-  announcements.getRange("D2:E1000").setDataValidation(dateHelp);
+  announcements.getRange("D2:D1000").setDataValidation(dateValidationFor_("D2"));
+  announcements.getRange("E2:E1000").setDataValidation(dateValidationFor_("E2"));
   announcements.getRange("I2:I1000").setDataValidation(yesNo);
 
   var wednesday = ss.getSheetByName(SHEET_NAMES.wednesday);
-  wednesday.getRange("A2:A1000").setDataValidation(dateHelp);
+  wednesday.getRange("A2:A1000").setDataValidation(dateValidationFor_("A2"));
   wednesday.getRange("B2:B1000").setDataValidation(mode);
   wednesday.getRange("G2:G1000").setDataValidation(yesNo);
 
   var word = wordSheet_(ss);
-  word.getRange("E2:E1000").setDataValidation(dateHelp);
+  word.getRange("E2:E1000").setDataValidation(dateValidationFor_("E2"));
   word.getRange("F2:F1000").setDataValidation(yesNo);
 }
 
@@ -281,11 +318,16 @@ function applyConditionalFormatting_(ss) {
 
 function formatStatus_(sheet, rangeA1) {
   var range = sheet.getRange(rangeA1);
-  var rules = sheet.getConditionalFormatRules().filter(function (rule) {
-    return rule.getRanges().every(function (r) {
-      return r.getA1Notation() !== rangeA1;
-    });
-  });
+  var rules = [];
+  var existing = sheet.getConditionalFormatRules();
+  for (var i = 0; i < existing.length; i++) {
+    var keep = true;
+    var ranges = existing[i].getRanges();
+    for (var j = 0; j < ranges.length; j++) {
+      if (ranges[j].getA1Notation() === rangeA1) keep = false;
+    }
+    if (keep) rules.push(existing[i]);
+  }
   rules.push(
     SpreadsheetApp.newConditionalFormatRule()
       .whenTextContains("FIX")
@@ -330,25 +372,36 @@ function protectRange_(range, description) {
 }
 
 function lockToOwner_(protection) {
-  var me = Session.getEffectiveUser();
-  protection.addEditor(me);
-  protection.removeEditors(
-    protection.getEditors().filter(function (user) {
-      return user.getEmail() !== me.getEmail();
-    })
-  );
-  if (protection.canDomainEdit()) protection.setDomainEdit(false);
+  try {
+    var me = Session.getEffectiveUser();
+    protection.addEditor(me);
+    var editors = protection.getEditors();
+    for (var i = 0; i < editors.length; i++) {
+      if (editors[i].getEmail() !== me.getEmail()) {
+        protection.removeEditor(editors[i]);
+      }
+    }
+    if (protection.canDomainEdit()) protection.setDomainEdit(false);
+  } catch (err) {
+    // Consumer accounts sometimes cannot remove other editors; warning-only still helps.
+    protection.setWarningOnly(true);
+    Logger.log("Protection softened: " + err);
+  }
 }
 
 function clearOldProtections_(ss) {
-  ss.getProtections(SpreadsheetApp.ProtectionType.SHEET).forEach(function (p) {
-    if (/Read_me|PIWC|status|header/i.test(p.getDescription() || "")) p.remove();
-  });
-  ss.getProtections(SpreadsheetApp.ProtectionType.RANGE).forEach(function (p) {
-    if (/header|status|Announcements|Wednesday|Word|PIWC/i.test(p.getDescription() || "")) {
-      p.remove();
+  var sheetProtections = ss.getProtections(SpreadsheetApp.ProtectionType.SHEET);
+  for (var i = 0; i < sheetProtections.length; i++) {
+    var sheetDesc = sheetProtections[i].getDescription() || "";
+    if (/Read_me|PIWC|status|header/i.test(sheetDesc)) sheetProtections[i].remove();
+  }
+  var rangeProtections = ss.getProtections(SpreadsheetApp.ProtectionType.RANGE);
+  for (var j = 0; j < rangeProtections.length; j++) {
+    var rangeDesc = rangeProtections[j].getDescription() || "";
+    if (/header|status|Announcements|Wednesday|Word|PIWC/i.test(rangeDesc)) {
+      rangeProtections[j].remove();
     }
-  });
+  }
 }
 
 /** Soft warning when a published row loses required fields. */
