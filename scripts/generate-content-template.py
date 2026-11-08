@@ -183,7 +183,7 @@ def build() -> Path:
     )
     wednesday["A5"].font = Font(name="Calibri", italic=True, color="6E6E73")
 
-    word = wb.create_sheet("Word")
+    word = wb.create_sheet("Word of the Week")
     write_table(
         word,
         ["eyebrow", "text", "reference", "note", "week_start", "published"],

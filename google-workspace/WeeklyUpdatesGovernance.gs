@@ -25,7 +25,9 @@ var SHEET_NAMES = {
   readme: "Read_me",
   announcements: "Announcements",
   wednesday: "Wednesday",
-  word: "Word",
+  // Live church sheet uses "Word of the Week"; older copies may still say "Word".
+  word: "Word of the Week",
+  wordLegacy: "Word",
 };
 
 var ANNOUNCEMENT_HEADERS = [
@@ -110,7 +112,7 @@ function ensureTabs_(ss) {
   ensureSheet_(ss, SHEET_NAMES.readme);
   ensureSheet_(ss, SHEET_NAMES.announcements);
   ensureSheet_(ss, SHEET_NAMES.wednesday);
-  ensureSheet_(ss, SHEET_NAMES.word);
+  ensureWordSheet_(ss);
 }
 
 function ensureSheet_(ss, name) {
@@ -119,10 +121,29 @@ function ensureSheet_(ss, name) {
   return sheet;
 }
 
+function ensureWordSheet_(ss) {
+  var sheet = ss.getSheetByName(SHEET_NAMES.word);
+  if (sheet) return sheet;
+  var legacy = ss.getSheetByName(SHEET_NAMES.wordLegacy);
+  if (legacy) {
+    legacy.setName(SHEET_NAMES.word);
+    return legacy;
+  }
+  return ensureSheet_(ss, SHEET_NAMES.word);
+}
+
+function wordSheet_(ss) {
+  return (
+    ss.getSheetByName(SHEET_NAMES.word) ||
+    ss.getSheetByName(SHEET_NAMES.wordLegacy) ||
+    ensureWordSheet_(ss)
+  );
+}
+
 function normalizeHeaders_(ss) {
   setHeaders_(ss.getSheetByName(SHEET_NAMES.announcements), ANNOUNCEMENT_HEADERS);
   setHeaders_(ss.getSheetByName(SHEET_NAMES.wednesday), WEDNESDAY_HEADERS);
-  setHeaders_(ss.getSheetByName(SHEET_NAMES.word), WORD_HEADERS);
+  setHeaders_(wordSheet_(ss), WORD_HEADERS);
   ensureReadme_(ss.getSheetByName(SHEET_NAMES.readme));
 }
 
@@ -154,7 +175,7 @@ function ensureReadme_(sheet) {
 function styleTabs_(ss) {
   var announcements = ss.getSheetByName(SHEET_NAMES.announcements);
   var wednesday = ss.getSheetByName(SHEET_NAMES.wednesday);
-  var word = ss.getSheetByName(SHEET_NAMES.word);
+  var word = wordSheet_(ss);
   announcements.setColumnWidths(1, 1, 140);
   announcements.setColumnWidths(2, 1, 220);
   announcements.setColumnWidths(3, 1, 420);
@@ -190,7 +211,7 @@ function applyValidations_(ss) {
   wednesday.getRange("B2:B1000").setDataValidation(mode);
   wednesday.getRange("G2:G1000").setDataValidation(yesNo);
 
-  var word = ss.getSheetByName(SHEET_NAMES.word);
+  var word = wordSheet_(ss);
   word.getRange("E2:E1000").setDataValidation(dateHelp);
   word.getRange("F2:F1000").setDataValidation(yesNo);
 }
@@ -211,7 +232,7 @@ function refreshStatusFormulas() {
   );
 
   fillStatus_(
-    ss.getSheetByName(SHEET_NAMES.word),
+    wordSheet_(ss),
     7,
     '=IF(F{row}<>"YES","",IF(OR(B{row}="",C{row}=""),"FIX: need text and reference","OK"))'
   );
@@ -232,7 +253,7 @@ function fillStatus_(sheet, statusCol, template) {
 function applyConditionalFormatting_(ss) {
   formatStatus_(ss.getSheetByName(SHEET_NAMES.announcements), "J2:J1000");
   formatStatus_(ss.getSheetByName(SHEET_NAMES.wednesday), "H2:H1000");
-  formatStatus_(ss.getSheetByName(SHEET_NAMES.word), "G2:G1000");
+  formatStatus_(wordSheet_(ss), "G2:G1000");
 }
 
 function formatStatus_(sheet, rangeA1) {
@@ -266,7 +287,7 @@ function protectGovernance_(ss) {
 
   protectRange_(ss.getSheetByName(SHEET_NAMES.announcements).getRange("A1:J1"), "Announcements headers");
   protectRange_(ss.getSheetByName(SHEET_NAMES.wednesday).getRange("A1:H1"), "Wednesday headers");
-  protectRange_(ss.getSheetByName(SHEET_NAMES.word).getRange("A1:G1"), "Word headers");
+  protectRange_(wordSheet_(ss).getRange("A1:G1"), "Word headers");
 
   var readme = ss.getSheetByName(SHEET_NAMES.readme);
   var readmeProtection = readme.protect().setDescription("Read_me locked for leaders");
@@ -276,7 +297,7 @@ function protectGovernance_(ss) {
   // Status formulas stay editable by owner only so leaders do not overwrite checks.
   protectRange_(ss.getSheetByName(SHEET_NAMES.announcements).getRange("J2:J1000"), "Announcements status");
   protectRange_(ss.getSheetByName(SHEET_NAMES.wednesday).getRange("H2:H1000"), "Wednesday status");
-  protectRange_(ss.getSheetByName(SHEET_NAMES.word).getRange("G2:G1000"), "Word status");
+  protectRange_(wordSheet_(ss).getRange("G2:G1000"), "Word status");
 }
 
 function protectRange_(range, description) {
@@ -322,7 +343,14 @@ function onEdit(e) {
     return;
   }
 
-  var publishedCol = name === SHEET_NAMES.announcements ? 9 : name === SHEET_NAMES.wednesday ? 7 : name === SHEET_NAMES.word ? 6 : 0;
+  var publishedCol =
+    name === SHEET_NAMES.announcements
+      ? 9
+      : name === SHEET_NAMES.wednesday
+        ? 7
+        : name === SHEET_NAMES.word || name === SHEET_NAMES.wordLegacy
+          ? 6
+          : 0;
   if (!publishedCol) return;
   var published = String(sheet.getRange(row, publishedCol).getDisplayValue() || "").toUpperCase();
   if (published !== "YES") return;
