@@ -49,11 +49,17 @@ Spreadsheet id: `1utkULtIqiPOv8PW9fR14QGiv9DubAwB1vC4gRizaS6o`
    | `CONTENT_GID_WORD` | `2041075164` |
 
 3. Apply sheet governance (owner only, once), signed in as the sheet owner:
-   - Open the Sheet while signed into the owner Google account (anonymous `/edit` links can show “Unable to open the file”)
+   - Open the Sheet while signed into the **same Google account that owns the Sheet**
    - Extensions → Apps Script
    - Paste [`google-workspace/WeeklyUpdatesGovernance.gs`](google-workspace/WeeklyUpdatesGovernance.gs)
    - Run `applyGovernance`
    - Reload the Sheet
+
+If Apps Script shows **Unable to open the file at this time**, you are usually on the wrong Google account (the URL often contains `authuser=3`). Fix:
+   - Sign out of extra Google accounts, or use a clean browser window / Incognito
+   - Sign in only with the church owner account (`antwerpvlamms@gmail.com` or whichever account owns the Sheet)
+   - Open the Sheet again from Drive, then Extensions → Apps Script
+   - Or go to [script.google.com](https://script.google.com) while on that account → New project → paste the governance file → save → run `applyGovernance` after binding it via the Sheet’s Extensions menu once the account matches
 
 That locks header rows, locks `Read_me`, forces YES/NO and Zoom / At the church dropdowns, requires `YYYY-MM-DD` dates, and adds a protected **Status** column (`OK` / `FIX…`) so incomplete published rows are obvious. The website also ignores invalid rows instead of breaking the page.
 
