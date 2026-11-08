@@ -116,8 +116,8 @@ export default async function HomePage() {
           <section id="notices" aria-labelledby="notices-title">
             <Reveal>
               <div className="section-head">
-                <p className="eyebrow">Notices</p>
-                <h2 id="notices-title">From the church</h2>
+                <p className="eyebrow">This week</p>
+                <h2 id="notices-title">Announcements</h2>
               </div>
             </Reveal>
             <div className="week-list">

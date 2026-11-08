@@ -99,14 +99,9 @@ function sheetConfigured(): boolean {
   return Boolean(process.env.CONTENT_SHEET_ID?.trim());
 }
 
-function gid(name: string): string | null {
-  const value = process.env[name]?.trim();
-  return value || null;
-}
-
 async function fetchSheet(gidEnv: string): Promise<Record<string, string>[] | null> {
   const sheetId = process.env.CONTENT_SHEET_ID?.trim();
-  const sheetGid = gid(gidEnv);
+  const sheetGid = process.env[gidEnv]?.trim();
   if (!sheetId || !sheetGid) return null;
 
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${encodeURIComponent(sheetGid)}`;
@@ -124,8 +119,8 @@ async function fetchSheet(gidEnv: string): Promise<Record<string, string>[] | nu
   }
 }
 
-function mapFromSiteRows(rows: Record<string, string>[] | null): SiteContent["site"] {
-  const site: SiteContent["site"] = {
+function baseSite(): SiteContent["site"] {
+  return {
     name: defaultSite.name,
     fullName: defaultSite.fullName,
     denomination: defaultSite.denomination,
@@ -152,39 +147,10 @@ function mapFromSiteRows(rows: Record<string, string>[] | null): SiteContent["si
     playlistTitle: defaultSite.playlistTitle,
     email: defaultSite.email,
   };
-  if (!rows) return site;
-
-  const values = new Map(rows.map((row) => [row.key, row.value]));
-  const pick = (key: string, fallback: string) => values.get(key)?.trim() || fallback;
-
-  site.name = pick("name", site.name);
-  site.fullName = pick("full_name", site.fullName);
-  site.denomination = pick("denomination", site.denomination);
-  site.tagline = pick("tagline", site.tagline);
-  site.lede = pick("lede", site.lede);
-  site.description = pick("description", site.description);
-  site.address.line = pick("address_line", site.address.line);
-  site.address.postalCode = pick("postal_code", site.address.postalCode);
-  site.address.city = pick("city", site.address.city);
-  site.address.district = pick("district", site.address.district);
-  site.address.country = pick("country", site.address.country);
-  site.address.countryCode = pick("country_code", site.address.countryCode);
-  site.email = pick("email", site.email);
-  site.zoomUrl = pick("zoom_url", site.zoomUrl);
-  site.instagram = pick("instagram_url", site.instagram);
-  site.instagramHandle = pick("instagram_handle", site.instagramHandle);
-  site.tiktok = pick("tiktok_url", site.tiktok);
-  site.tiktokHandle = pick("tiktok_handle", site.tiktokHandle);
-  site.spotify = pick("spotify_url", site.spotify);
-  site.spotifyEmbed = pick("spotify_embed", site.spotifyEmbed);
-  site.playlistTitle = pick("playlist_title", site.playlistTitle);
-  site.mapsUrl = pick("maps_url", site.mapsUrl);
-  site.mapsEmbed = pick("maps_embed", site.mapsEmbed);
-  return site;
 }
 
-function mapGiving(rows: Record<string, string>[] | null): SiteContent["giving"] {
-  const giving: SiteContent["giving"] = {
+function baseGiving(): SiteContent["giving"] {
+  return {
     beneficiary: defaultGiving.beneficiary,
     iban: defaultGiving.iban,
     ibanDisplay: defaultGiving.ibanDisplay,
@@ -195,93 +161,34 @@ function mapGiving(rows: Record<string, string>[] | null): SiteContent["giving"]
     stripePaymentUrl: defaultGiving.stripePaymentUrl,
     ctaLabel: defaultGiving.ctaLabel,
   };
-  if (!rows) return giving;
-  const values = new Map(rows.map((row) => [row.key, row.value]));
-  const pick = (key: string, fallback: string) => values.get(key)?.trim() || fallback;
-  giving.beneficiary = pick("beneficiary", giving.beneficiary);
-  giving.iban = pick("iban", giving.iban);
-  giving.ibanDisplay = pick("iban_display", giving.ibanDisplay);
-  giving.bic = pick("bic", giving.bic);
-  giving.bicFull = pick("bic_full", giving.bicFull);
-  giving.currency = pick("currency", giving.currency);
-  giving.epcPayload = pick("epc_payload", giving.epcPayload);
-  giving.stripePaymentUrl = pick("stripe_payment_url", giving.stripePaymentUrl);
-  giving.ctaLabel = pick("cta_label", giving.ctaLabel);
-  return giving;
-}
-
-function mapMission(rows: Record<string, string>[] | null) {
-  if (!rows || rows.length === 0) {
-    return {
-      eyebrow: defaultMission.eyebrow,
-      title: defaultMission.title,
-      paragraphs: [...defaultMission.paragraphs],
-      pillars: defaultMission.pillars.map((pillar) => ({ ...pillar })),
-    };
-  }
-
-  const published = rows
-    .filter((row) => isYes(row.published))
-    .sort((a, b) => Number(a.sort || 0) - Number(b.sort || 0));
-
-  const eyebrow =
-    published.find((row) => row.section === "eyebrow")?.body || defaultMission.eyebrow;
-  const title = published.find((row) => row.section === "title")?.body || defaultMission.title;
-  const paragraphs = published
-    .filter((row) => row.section === "paragraph" && row.body)
-    .map((row) => row.body);
-  const pillars = published
-    .filter((row) => row.section === "pillar" && row.title && row.body)
-    .map((row) => ({ name: row.title, detail: row.body }));
-
-  return {
-    eyebrow,
-    title,
-    paragraphs: paragraphs.length ? paragraphs : [...defaultMission.paragraphs],
-    pillars: pillars.length
-      ? pillars
-      : defaultMission.pillars.map((pillar) => ({ ...pillar })),
-  };
 }
 
 function mapWord(rows: Record<string, string>[] | null) {
-  if (!rows || rows.length === 0) return { ...defaultWord };
+  if (!rows || rows.length === 0) {
+    return {
+      eyebrow: defaultWord.eyebrow,
+      text: defaultWord.text,
+      reference: defaultWord.reference,
+      note: defaultWord.note,
+    };
+  }
   const published = rows.filter((row) => isYes(row.published));
   const active =
-    published.sort((a, b) => (b.week_start || "").localeCompare(a.week_start || ""))[0] ??
-    null;
-  if (!active) return { ...defaultWord };
+    published.sort((a, b) => (b.week_start || "").localeCompare(a.week_start || ""))[0] ?? null;
+  if (!active) {
+    return {
+      eyebrow: defaultWord.eyebrow,
+      text: defaultWord.text,
+      reference: defaultWord.reference,
+      note: defaultWord.note,
+    };
+  }
   return {
     eyebrow: active.eyebrow || defaultWord.eyebrow,
     text: active.text || defaultWord.text,
     reference: active.reference || defaultWord.reference,
     note: active.note || defaultWord.note,
   };
-}
-
-function mapGatherings(rows: Record<string, string>[] | null) {
-  if (!rows || rows.length === 0) {
-    return defaultGatherings.map((item) => ({ ...item }));
-  }
-  const mapped = rows
-    .filter((row) => isYes(row.published) && row.id && row.name)
-    .sort((a, b) => Number(a.sort || 0) - Number(b.sort || 0))
-    .map((row) => {
-      const href = row.link || defaultSite.mapsUrl;
-      return {
-        id: row.id,
-        name: row.name,
-        when: row.when || "",
-        time: row.time || "",
-        place: row.place || "",
-        detail: row.detail || "",
-        note: row.note || "",
-        href,
-        cta: row.cta || "Learn more",
-        external: /^https?:\/\//i.test(href),
-      };
-    });
-  return mapped.length ? mapped : defaultGatherings.map((item) => ({ ...item }));
 }
 
 function mapAnnouncements(rows: Record<string, string>[] | null) {
@@ -304,10 +211,49 @@ function mapAnnouncements(rows: Record<string, string>[] | null) {
     }));
 }
 
+function activeWednesday(rows: Record<string, string>[] | null) {
+  if (!rows || rows.length === 0) return null;
+  const today = todayBrussels();
+  const published = rows
+    .filter((row) => isYes(row.published) && row.week_start)
+    .filter((row) => row.week_start <= today)
+    .sort((a, b) => (b.week_start || "").localeCompare(a.week_start || ""));
+  return published[0] ?? null;
+}
+
+function mapGatherings(wednesdayRows: Record<string, string>[] | null): SiteContent["gatherings"] {
+  const gatherings = defaultGatherings.map((item) => ({ ...item }));
+  const wednesday = activeWednesday(wednesdayRows);
+  if (!wednesday) return gatherings;
+
+  return gatherings.map((item) => {
+    if (item.id !== "bible") return item;
+
+    const atChurch = /church/i.test(wednesday.mode || "");
+    const href =
+      wednesday.link ||
+      (atChurch ? defaultSite.mapsUrl : defaultSite.zoomUrl);
+    return {
+      ...item,
+      when: "Wednesdays",
+      time: wednesday.time || (atChurch ? "19:30" : "Online"),
+      place: wednesday.place || (atChurch ? "Merksemsesteenweg 32/34, Deurne" : "Usually on Zoom"),
+      note:
+        wednesday.note ||
+        (atChurch
+          ? "Bible study is at the church this Wednesday."
+          : "Bible study can occasionally take place at the church. When it does, we share the update on Instagram and TikTok."),
+      href,
+      cta: atChurch ? "Get directions" : "Join on Zoom",
+      external: /^https?:\/\//i.test(href),
+    };
+  });
+}
+
 function defaults(): SiteContent {
   return {
-    site: mapFromSiteRows(null),
-    giving: mapGiving(null),
+    site: baseSite(),
+    giving: baseGiving(),
     mission: {
       eyebrow: defaultMission.eyebrow,
       title: defaultMission.title,
@@ -326,34 +272,32 @@ function defaults(): SiteContent {
   };
 }
 
-/** Load public website content from the Excel/Sheets feed when configured. */
+/**
+ * Load weekly leader updates (announcements, Wednesday venue, word).
+ * Stable church details stay in code. Leaders only edit the spreadsheet.
+ */
 export async function getSiteContent(): Promise<SiteContent> {
   if (!sheetConfigured()) return defaults();
 
-  const [siteRows, gatheringRows, missionRows, wordRows, givingRows, announcementRows] =
-    await Promise.all([
-      fetchSheet("CONTENT_GID_SITE"),
-      fetchSheet("CONTENT_GID_GATHERINGS"),
-      fetchSheet("CONTENT_GID_MISSION"),
-      fetchSheet("CONTENT_GID_WORD"),
-      fetchSheet("CONTENT_GID_GIVING"),
-      fetchSheet("CONTENT_GID_ANNOUNCEMENTS"),
-    ]);
+  const [announcementRows, wednesdayRows, wordRows] = await Promise.all([
+    fetchSheet("CONTENT_GID_ANNOUNCEMENTS"),
+    fetchSheet("CONTENT_GID_WEDNESDAY"),
+    fetchSheet("CONTENT_GID_WORD"),
+  ]);
 
-  const anySheet =
-    Boolean(siteRows) ||
-    Boolean(gatheringRows) ||
-    Boolean(missionRows) ||
-    Boolean(wordRows) ||
-    Boolean(givingRows) ||
-    Boolean(announcementRows);
+  const anySheet = Boolean(announcementRows) || Boolean(wednesdayRows) || Boolean(wordRows);
 
   return {
-    site: mapFromSiteRows(siteRows),
-    giving: mapGiving(givingRows),
-    mission: mapMission(missionRows),
+    site: baseSite(),
+    giving: baseGiving(),
+    mission: {
+      eyebrow: defaultMission.eyebrow,
+      title: defaultMission.title,
+      paragraphs: [...defaultMission.paragraphs],
+      pillars: defaultMission.pillars.map((pillar) => ({ ...pillar })),
+    },
     word: mapWord(wordRows),
-    gatherings: mapGatherings(gatheringRows),
+    gatherings: mapGatherings(wednesdayRows),
     announcements: mapAnnouncements(announcementRows),
     sourcedFromSheet: anySheet,
   };
