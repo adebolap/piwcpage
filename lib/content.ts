@@ -82,8 +82,45 @@ export type SiteContent = {
 
 const REVALIDATE_SECONDS = 60;
 
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+const ID_RE = /^[a-z0-9][a-z0-9-]{1,48}$/i;
+const MAX = {
+  title: 120,
+  body: 500,
+  note: 280,
+  place: 120,
+  text: 280,
+  reference: 80,
+  link: 500,
+} as const;
+
 function isYes(value: string | undefined): boolean {
   return /^(yes|y|true|1)$/i.test((value ?? "").trim());
+}
+
+function isDate(value: string | undefined): boolean {
+  if (!value || !DATE_RE.test(value)) return false;
+  const stamp = Date.parse(`${value}T00:00:00Z`);
+  return Number.isFinite(stamp);
+}
+
+function cleanText(value: string | undefined, max: number): string {
+  return (value ?? "").replace(/\s+/g, " ").trim().slice(0, max);
+}
+
+function cleanLink(value: string | undefined): string {
+  const link = cleanText(value, MAX.link);
+  if (!link) return "";
+  if (!/^https:\/\//i.test(link)) return "";
+  return link;
+}
+
+function normalizeWednesdayMode(value: string | undefined): "Zoom" | "At the church" | null {
+  const raw = (value ?? "").trim().toLowerCase();
+  if (!raw) return null;
+  if (raw === "zoom" || raw === "online") return "Zoom";
+  if (raw.includes("church") || raw === "in person" || raw === "in-person") return "At the church";
+  return null;
 }
 
 function todayBrussels(): string {
@@ -164,30 +201,27 @@ function baseGiving(): SiteContent["giving"] {
 }
 
 function mapWord(rows: Record<string, string>[] | null) {
-  if (!rows || rows.length === 0) {
-    return {
-      eyebrow: defaultWord.eyebrow,
-      text: defaultWord.text,
-      reference: defaultWord.reference,
-      note: defaultWord.note,
-    };
-  }
-  const published = rows.filter((row) => isYes(row.published));
-  const active =
-    published.sort((a, b) => (b.week_start || "").localeCompare(a.week_start || ""))[0] ?? null;
-  if (!active) {
-    return {
-      eyebrow: defaultWord.eyebrow,
-      text: defaultWord.text,
-      reference: defaultWord.reference,
-      note: defaultWord.note,
-    };
-  }
+  const fallback = {
+    eyebrow: defaultWord.eyebrow,
+    text: defaultWord.text,
+    reference: defaultWord.reference,
+    note: defaultWord.note,
+  };
+  if (!rows || rows.length === 0) return fallback;
+
+  const published = rows
+    .filter((row) => isYes(row.published))
+    .filter((row) => cleanText(row.text, MAX.text) && cleanText(row.reference, MAX.reference))
+    .filter((row) => !row.week_start || isDate(row.week_start))
+    .sort((a, b) => (b.week_start || "").localeCompare(a.week_start || ""));
+  const active = published[0];
+  if (!active) return fallback;
+
   return {
-    eyebrow: active.eyebrow || defaultWord.eyebrow,
-    text: active.text || defaultWord.text,
-    reference: active.reference || defaultWord.reference,
-    note: active.note || defaultWord.note,
+    eyebrow: cleanText(active.eyebrow, 80) || defaultWord.eyebrow,
+    text: cleanText(active.text, MAX.text),
+    reference: cleanText(active.reference, MAX.reference),
+    note: cleanText(active.note, MAX.note) || defaultWord.note,
   };
 }
 
@@ -196,18 +230,24 @@ function mapAnnouncements(rows: Record<string, string>[] | null) {
   const today = todayBrussels();
   return rows
     .filter((row) => {
-      if (!isYes(row.published) || !row.id || !row.title) return false;
+      if (!isYes(row.published)) return false;
+      if (!ID_RE.test(row.id || "")) return false;
+      if (!cleanText(row.title, MAX.title)) return false;
+      if (row.start_date && !isDate(row.start_date)) return false;
+      if (row.end_date && !isDate(row.end_date)) return false;
+      if (row.start_date && row.end_date && row.start_date > row.end_date) return false;
       if (row.start_date && row.start_date > today) return false;
       if (row.end_date && row.end_date < today) return false;
+      if (row.link && !cleanLink(row.link)) return false;
       return true;
     })
     .sort((a, b) => Number(a.sort || 0) - Number(b.sort || 0))
     .map((row) => ({
       id: row.id,
-      title: row.title,
-      body: row.body || "",
-      link: row.link || "",
-      cta: row.cta || "Learn more",
+      title: cleanText(row.title, MAX.title),
+      body: cleanText(row.body, MAX.body),
+      link: cleanLink(row.link),
+      cta: cleanText(row.cta, 40) || "Learn more",
     }));
 }
 
@@ -215,8 +255,19 @@ function activeWednesday(rows: Record<string, string>[] | null) {
   if (!rows || rows.length === 0) return null;
   const today = todayBrussels();
   const published = rows
-    .filter((row) => isYes(row.published) && row.week_start)
+    .filter((row) => isYes(row.published))
+    .filter((row) => isDate(row.week_start))
+    .filter((row) => normalizeWednesdayMode(row.mode))
+    .filter((row) => cleanText(row.place, MAX.place))
     .filter((row) => row.week_start <= today)
+    .filter((row) => {
+      const mode = normalizeWednesdayMode(row.mode);
+      const link = cleanLink(row.link);
+      // Incomplete published rows are ignored so a mistake cannot blank the site.
+      if (mode === "Zoom") return Boolean(link || defaultSite.zoomUrl);
+      if (mode === "At the church") return Boolean(link || defaultSite.mapsUrl);
+      return false;
+    })
     .sort((a, b) => (b.week_start || "").localeCompare(a.week_start || ""));
   return published[0] ?? null;
 }
@@ -229,23 +280,26 @@ function mapGatherings(wednesdayRows: Record<string, string>[] | null): SiteCont
   return gatherings.map((item) => {
     if (item.id !== "bible") return item;
 
-    const atChurch = /church/i.test(wednesday.mode || "");
+    const mode = normalizeWednesdayMode(wednesday.mode) || "Zoom";
+    const atChurch = mode === "At the church";
     const href =
-      wednesday.link ||
+      cleanLink(wednesday.link) ||
       (atChurch ? defaultSite.mapsUrl : defaultSite.zoomUrl);
     return {
       ...item,
       when: "Wednesdays",
-      time: wednesday.time || (atChurch ? "19:30" : "Online"),
-      place: wednesday.place || (atChurch ? "Merksemsesteenweg 32/34, Deurne" : "Usually on Zoom"),
+      time: cleanText(wednesday.time, 40) || (atChurch ? "19:30" : "Online"),
+      place:
+        cleanText(wednesday.place, MAX.place) ||
+        (atChurch ? "Merksemsesteenweg 32/34, Deurne" : "Usually on Zoom"),
       note:
-        wednesday.note ||
+        cleanText(wednesday.note, MAX.note) ||
         (atChurch
           ? "Bible study is at the church this Wednesday."
           : "Bible study can occasionally take place at the church. When it does, we share the update on Instagram and TikTok."),
       href,
       cta: atChurch ? "Get directions" : "Join on Zoom",
-      external: /^https?:\/\//i.test(href),
+      external: /^https:\/\//i.test(href),
     };
   });
 }

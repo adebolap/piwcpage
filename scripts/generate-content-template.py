@@ -77,6 +77,7 @@ def build() -> Path:
         "- Set Published to NO (or delete the row later) when it should come down.",
         "- Dates use Europe/Brussels and the format YYYY-MM-DD (example: 2026-11-12).",
         "- A notice shows only when today is between Start date and End date.",
+        "- After governance is applied in Google Sheets, check the Status column. Only OK rows should stay Published = YES.",
         "",
         "Wednesday examples",
         "- Usual week: Mode = Zoom, Place = Zoom, Note blank, Published = YES.",

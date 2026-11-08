@@ -28,23 +28,38 @@ Leaders use one spreadsheet to post announcements and to say whether Wednesday B
 | `Word` | Optional scripture for the week |
 | `Read_me` | Short how-to inside the file |
 
+### Live church sheet
+
+Working copy:
+
+https://docs.google.com/spreadsheets/d/1utkULtIqiPOv8PW9fR14QGiv9DubAwB1vC4gRizaS6o/edit
+
+Spreadsheet id: `1utkULtIqiPOv8PW9fR14QGiv9DubAwB1vC4gRizaS6o`
+
 ### One-time admin setup
 
-1. Upload the Excel file to Google Drive and open it with Google Sheets.
-2. Share as **Anyone with the link → Viewer**.
-3. Copy the spreadsheet id and the `gid` for `Announcements`, `Wednesday`, and `Word`.
-4. Set on Vercel once, then redeploy:
+1. In that Google Sheet, share **Anyone with the link → Viewer** so the website can read it. Keep editor access for leaders only.
+2. Open each of `Announcements`, `Wednesday`, and `Word`, and copy the `gid` from the URL (`#gid=…`).
+3. Set on Vercel once, then redeploy:
 
    | Name | Value |
    | --- | --- |
-   | `CONTENT_SHEET_ID` | spreadsheet id |
+   | `CONTENT_SHEET_ID` | `1utkULtIqiPOv8PW9fR14QGiv9DubAwB1vC4gRizaS6o` |
    | `CONTENT_GID_ANNOUNCEMENTS` | Announcements tab gid |
    | `CONTENT_GID_WEDNESDAY` | Wednesday tab gid |
    | `CONTENT_GID_WORD` | Word tab gid |
 
+4. Apply sheet governance (owner only, once):
+   - Extensions → Apps Script
+   - Paste [`google-workspace/WeeklyUpdatesGovernance.gs`](google-workspace/WeeklyUpdatesGovernance.gs)
+   - Run `applyGovernance`
+   - Reload the Sheet
+
+That locks header rows, locks `Read_me`, forces YES/NO and Zoom / At the church dropdowns, requires `YYYY-MM-DD` dates, and adds a protected **Status** column (`OK` / `FIX…`) so incomplete published rows are obvious. The website also ignores invalid rows instead of breaking the page.
+
 ### Every week after that
 
-Leaders only edit the Google Sheet. Changes show on the website in about a minute. No deploy, no code review, no backend work.
+Leaders only edit the Google Sheet. Watch **Status**. Changes show on the website in about a minute. No deploy, no code review, no backend work.
 
 To regenerate the Excel template: `npm run content:template` (needs Python `openpyxl`).
 
