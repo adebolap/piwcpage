@@ -7,9 +7,14 @@
  * 1. Open the Google Sheet.
  * 2. Extensions → Apps Script.
  * 3. Paste this file (replace any blank Code.gs).
- * 4. Save, then run `applyGovernance` from the dropdown.
+ * 4. Save. In the toolbar function list, choose `applyGovernance`
+ *    (or `myFunction` — both work). Click Run.
  * 5. Approve the permission prompt.
  * 6. Reload the Sheet. A “PIWC updates” menu appears.
+ *
+ * If you see “Attempted to execute myFunction, but it was deleted”,
+ * the dropdown was still on the old blank template. This file defines
+ * myFunction again, so Save and Run once more.
  *
  * What this locks down:
  * - Header row 1 is protected (leaders cannot rename or delete columns).
@@ -73,9 +78,23 @@ function onOpen() {
     .addToUi();
 }
 
+/**
+ * Default Apps Script entry point.
+ * The editor often still has "myFunction" selected after you paste this file.
+ */
+function myFunction() {
+  applyGovernance();
+}
+
 /** One-click setup: structure, validation, protection, status formulas. */
 function applyGovernance() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.getActive();
+  if (!ss) {
+    throw new Error(
+      "Open this script from the Google Sheet: Extensions → Apps Script. " +
+        "Then choose applyGovernance (or myFunction) and click Run."
+    );
+  }
   ss.setSpreadsheetTimeZone("Europe/Brussels");
 
   ensureTabs_(ss);
@@ -86,14 +105,18 @@ function applyGovernance() {
   applyConditionalFormatting_(ss);
   protectGovernance_(ss);
 
-  SpreadsheetApp.getUi().alert(
-    "Governance applied.\n\n" +
-      "• Header rows are locked.\n" +
-      "• Read_me is locked for editors.\n" +
-      "• Published / Mode use dropdowns.\n" +
-      "• Status turns red when a published row is incomplete.\n\n" +
-      "Leaders should only edit data rows. Do not rename tabs or columns."
-  );
+  try {
+    SpreadsheetApp.getUi().alert(
+      "Governance applied.\n\n" +
+        "• Header rows are locked.\n" +
+        "• Read_me is locked for editors.\n" +
+        "• Published / Mode use dropdowns.\n" +
+        "• Status turns red when a published row is incomplete.\n\n" +
+        "Leaders should only edit data rows. Do not rename tabs or columns."
+    );
+  } catch (err) {
+    Logger.log("Governance applied. Reload the Google Sheet.");
+  }
 }
 
 function showChecklist() {
