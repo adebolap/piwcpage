@@ -45,6 +45,9 @@ export const giving = {
   /** Exact EPC QR payload scanned from the church payment code. */
   epcPayload:
     "BCD\n002\n1\nSCT\nKREDBEBBXXX\nCHURCH OF PENTECOST VZW ANTWERP P.I.W.C\nBE61734048103117\nEUR0.00\n\n",
+  /** Stripe Payment Link from the church QR. */
+  stripePaymentUrl: "https://buy.stripe.com/5kA8xG4hU1L29u8000",
+  ctaLabel: "Give online",
 } as const;
 
 /**

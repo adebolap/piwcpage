@@ -13,7 +13,31 @@ Details on the page come from the church’s public links:
 
 Sunday worship is 9:30am to 12:00 noon. Friday Impact Service is every Friday at 19:30. Both are at Merksemsesteenweg 32/34. Wednesday Bible study is usually on Zoom and can occasionally meet at the church. Those changes are announced on Instagram and TikTok.
 
-Edit the gatherings list, mission copy, and the “word for the week” in `lib/site.ts`.
+Built-in defaults live in `lib/site.ts`. Prefer the Excel / Google Sheets feed below for day-to-day edits.
+
+## Excel / Google Sheets content feed
+
+Church editors can update the website from a spreadsheet instead of editing code.
+
+1. Download [`content/PIWC-Antwerp-website-feed.xlsx`](content/PIWC-Antwerp-website-feed.xlsx).
+2. Upload it to Google Drive and open with Google Sheets.
+3. Share as **Anyone with the link → Viewer**. Keep prayer requests in the private Workspace sheet from `Code.gs`, never in this public feed.
+4. Copy the spreadsheet id from the URL, and each tab’s `gid` from `#gid=…`.
+5. Set these Vercel variables, then redeploy:
+
+   | Name | Value |
+   | --- | --- |
+   | `CONTENT_SHEET_ID` | spreadsheet id |
+   | `CONTENT_GID_SITE` | Site tab gid |
+   | `CONTENT_GID_GATHERINGS` | Gatherings tab gid |
+   | `CONTENT_GID_MISSION` | Mission tab gid |
+   | `CONTENT_GID_WORD` | Word tab gid |
+   | `CONTENT_GID_GIVING` | Giving tab gid |
+   | `CONTENT_GID_ANNOUNCEMENTS` | Announcements tab gid |
+
+Tabs cover gatherings, the word for the week, announcements, mission copy, giving (bank + Stripe payment link), and site links. Leave a cell blank to keep the built-in default. The site refreshes sheet content about once a minute.
+
+To regenerate the Excel file after column changes: `npm run content:template` (needs Python `openpyxl`).
 
 ## Pages
 
@@ -48,6 +72,7 @@ Optional Workspace extras, set as environment variables:
 
 - `CONTACT_EMAIL` : shown on the site. Until you set this, the site uses antwerpvlamms@gmail.com.
 - `GOOGLE_CALENDAR_ID` : a calendar shared as public, so the agenda can be embedded. Times display in Europe/Brussels.
+- `CONTENT_SHEET_ID` and `CONTENT_GID_*` : optional public spreadsheet feed. See the content feed section above.
 
 ## Deploy on Vercel
 
@@ -60,6 +85,7 @@ Optional Workspace extras, set as environment variables:
    | `PRAYER_SHARED_SECRET` | the same string as `PRAYER_SECRET` |
    | `CONTACT_EMAIL` | optional. Defaults to antwerpvlamms@gmail.com |
    | `GOOGLE_CALENDAR_ID` | optional |
+   | `CONTENT_SHEET_ID` / `CONTENT_GID_*` | optional. Spreadsheet feed for gatherings, word, announcements, mission, giving, and site links |
    | `NEXT_PUBLIC_SITE_URL` | optional. Leave empty and the QR code uses the domain of the visit, including `*.vercel.app` and a custom domain. |
 
 3. Deploy, then open `/pray` and send a test request. Confirm the Sheet row and the email.

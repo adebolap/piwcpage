@@ -3,26 +3,41 @@ import Link from "next/link";
 import { PrintButton } from "@/components/print-button";
 import { QrCode } from "@/components/qr-code";
 import { Reveal } from "@/components/reveal";
-import { giving, site } from "@/lib/site";
+import { getSiteContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Give",
   description: "Support the ministry of PIWC Antwerp by bank transfer or payment QR code.",
 };
 
-export default function GivePage() {
+/** Refresh when the Google Sheets content feed changes. */
+export const revalidate = 60;
+
+export default async function GivePage() {
+  const { giving, site } = await getSiteContent();
+
   return (
     <main id="main" className="wrap">
       <header className="page-intro no-print">
         <p className="eyebrow">Partner with us</p>
         <h1>Give to PIWC Antwerp</h1>
         <p className="lede">
-          Your gift helps the church worship, teach, and serve Antwerp. Scan the payment QR with
-          your banking app, or transfer to the account below. Leave the amount blank in the code so
-          you can choose what to give.
+          Your gift helps the church worship, teach, and serve Antwerp. Give online with the
+          payment link, scan the bank QR with your banking app, or transfer to the account below.
+          Leave the amount blank in the bank code so you can choose what to give.
         </p>
         <div className="actions">
-          <a className="button" href="/api/qr/give">
+          {giving.stripePaymentUrl ? (
+            <a
+              className="button"
+              href={giving.stripePaymentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {giving.ctaLabel}
+            </a>
+          ) : null}
+          <a className="button button-ghost" href="/api/qr/give">
             Download QR PNG
           </a>
           <PrintButton />

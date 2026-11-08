@@ -1,10 +1,11 @@
 import QRCode from "qrcode";
 import { NextResponse } from "next/server";
-import { giving } from "@/lib/site";
+import { getSiteContent } from "@/lib/content";
 
 export const runtime = "nodejs";
 
 export async function GET() {
+  const { giving } = await getSiteContent();
   const png = await QRCode.toBuffer(giving.epcPayload, {
     type: "png",
     margin: 2,
