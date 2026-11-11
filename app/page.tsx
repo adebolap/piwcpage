@@ -2,20 +2,24 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { QrCode } from "@/components/qr-code";
 import { Reveal } from "@/components/reveal";
-import { getCalendarEmbedUrl, getContactEmail } from "@/lib/integrations";
-import { addressLines, gatherings, giving, mission, site, word } from "@/lib/site";
+import { contentAddressLines, getSiteContent } from "@/lib/content";
+import { getCalendarEmbedUrl } from "@/lib/integrations";
+import { site as fallbackSite } from "@/lib/site";
 import { getPrayerUrl, getSiteUrl } from "@/lib/url";
 
 export const metadata: Metadata = {
   title: "PIWC Antwerp: The Centre where God lives",
-  description: site.description,
+  description: fallbackSite.description,
 };
 
 export default async function HomePage() {
+  const content = await getSiteContent();
+  const { site, gatherings, mission, word, giving, announcements } = content;
   const prayerUrl = await getPrayerUrl();
   const siteUrl = await getSiteUrl();
   const calendar = getCalendarEmbedUrl();
-  const email = getContactEmail();
+  const email = process.env.CONTACT_EMAIL?.trim() || site.email;
+  const address = contentAddressLines(site);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -108,6 +112,40 @@ export default async function HomePage() {
           </div>
         </section>
 
+        {announcements.length > 0 ? (
+          <section id="notices" aria-labelledby="notices-title">
+            <Reveal>
+              <div className="section-head">
+                <p className="eyebrow">This week</p>
+                <h2 id="notices-title">Announcements</h2>
+              </div>
+            </Reveal>
+            <div className="week-list">
+              {announcements.map((item, index) => (
+                <Reveal key={item.id} delay={index * 60}>
+                  {item.link ? (
+                    <a
+                      className="gather"
+                      href={item.link}
+                      target={/^https?:\/\//i.test(item.link) ? "_blank" : undefined}
+                      rel={/^https?:\/\//i.test(item.link) ? "noopener noreferrer" : undefined}
+                    >
+                      <strong>{item.title}</strong>
+                      <span>{item.body}</span>
+                      <em>{item.cta}</em>
+                    </a>
+                  ) : (
+                    <div className="gather">
+                      <strong>{item.title}</strong>
+                      <span>{item.body}</span>
+                    </div>
+                  )}
+                </Reveal>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section id="visit" aria-labelledby="visit-title">
           <Reveal>
             <div className="section-head">
@@ -124,7 +162,7 @@ export default async function HomePage() {
             <Reveal>
               <div className="panel">
                 <p className="address">
-                  {addressLines().map((line) => (
+                  {address.map((line) => (
                     <span key={line}>
                       {line}
                       <br />
@@ -285,7 +323,20 @@ export default async function HomePage() {
                   </li>
                 </ul>
                 <div className="actions">
-                  <Link className="button" href="/give">
+                  {giving.stripePaymentUrl ? (
+                    <a
+                      className="button"
+                      href={giving.stripePaymentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {giving.ctaLabel}
+                    </a>
+                  ) : null}
+                  <Link
+                    className={giving.stripePaymentUrl ? "button button-ghost" : "button"}
+                    href="/give"
+                  >
                     Open giving page
                   </Link>
                   <a className="button button-ghost" href="/api/qr/give">

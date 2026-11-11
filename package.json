@@ -6,7 +6,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test lib/prayer.test.ts"
+    "test": "node --experimental-strip-types --test lib/*.test.ts",
+    "content:template": "python3 scripts/generate-content-template.py"
   },
   "dependencies": {
     "next": "^16.4.3",
